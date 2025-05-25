@@ -1,0 +1,58 @@
+---
+title: "Friends Viewership Report"
+author: "Muhammad Ibrahim Hanif"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+## **_Friends_ Overview**
+
+*Friends* premiered on NBC on September 22, 1994 and ran for 10 seasons.  
+Below we’ll load seasonal viewership data, plot trends, and comment on changes.
+
+![Friends Logo](images/friends_logo.png){width=300px}
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Data Summary
+
+```{r load-data}
+df <- read_csv("Data/viewership.csv")
+glimpse(df)
+summary(df$Viewers)
+```
+
+## Viewership Over Seasons
+
+```{r plot-viewers}
+ggplot(df, aes(x = Season, y = Viewers)) +
+  geom_line() +
+  labs(
+    title = "Average Viewers by Season",
+    x = "Season",
+    y = "Viewers (millions)"
+  )
+```
+
+## Season-to-Season Changes
+
+```{r plot-changes}
+df <- df %>%
+  arrange(Season) %>%
+  mutate(Change = Viewers - lag(Viewers))
+
+ggplot(df, aes(x = Season, y = Change)) +
+  geom_col() +
+  labs(
+    title = "Change in Viewers Between Seasons",
+    x = "Season",
+    y = "Δ Viewers (millions)"
+  )
+```
+
+## Observations
+
+Between Season 1 and Season 2 viewership **increased** by `r round(df$Change[df$Season == 2], 1)` million.  
+Between Season 6 and Season 7 it **decreased** by `r abs(round(df$Change[df$Season == 7], 1))` million.
